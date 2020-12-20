@@ -1,0 +1,72 @@
+[
+  {
+    "id": "set_1",
+    "name": "Бургер",
+    "description": "Сочный бургер, которому позавидует любой макдак!",
+    "img": "https://image.freepik.com/free-psd/food-banner-template_202595-302.jpg",
+    "price": "230"
+  },
+  {
+    "id": "set_2",
+    "name": "Пицца",
+    "description": "Такую пиццулину ты запомнишь на всю жизнь",
+    "img": "https://image.freepik.com/free-psd/food-social-media-promotion-and-banner-post-design-template_202595-327.jpg",
+    "price": "800"
+  },
+  {
+    "id": "set_3",
+    "name": "Шашлык свиной",
+    "description": "Шашлычок на углях с грибным соусом и свежими овощами",
+    "img": "https://image.freepik.com/free-vector/hand-drawn-satay-illustration_23-2148782795.jpg",
+    "price": "200"
+  },
+  {
+    "id": "set_4",
+    "name": "Тако с говядиной",
+    "description": "Осторожно, амиго, оно очень острое",
+    "img": "https://image.freepik.com/free-photo/close-up-hand-holding-taco_23-2148764379.jpg",
+    "price": "150"
+  },
+  {
+    "id": "set_5",
+    "name": "Рамен со свининой",
+    "description": "Рамен со свининой, грибами, якисобой и сыром тофу. Итадакимас!",
+    "img": "https://image.freepik.com/free-vector/hand-drawn-hot-pot_23-2148782791.jpg",
+    "price": "300"
+  },
+  {
+    "id": "set_6",
+    "name": "Капустный набор",
+    "description": "Белая, цветная, пекинская, брюссельская, каперсы - попробуй капусту разных стран в одном наборе",
+    "img": "https://image.freepik.com/free-psd/healthy-special-food-menu-promotion-social-media-flyer-or-instagram-post-template_293421-75.jpg",
+    "price": "350"
+  },
+  {
+    "id": "set_7",
+    "name": "Картофель Айдахо",
+    "description": "Хрустящий жаренный картофель",
+    "img": "https://image.freepik.com/free-psd/high-angle-fries-and-drink-arrangement_23-2148793959.jpg",
+    "price": "80"
+  },
+  {
+    "id": "set_8",
+    "name": "Овсянная каша",
+    "description": "Овсянка, сэр! Просто и со вкусом",
+    "img": "https://image.freepik.com/free-vector/3d-realistic-oat-ears-grains-with-white-bowl-detailed-cereal-plant_1441-1785.jpg",
+    "price": "30"
+  },
+  {
+    "id": "set_9",
+    "name": "Украинский борщ",
+    "description": "Настоящий борщ со сметаной. Как бабушка готовила",
+    "img": "https://image.freepik.com/free-photo/traditional-ukrainian-russian-traditional-beet-red-soup_188533-123.jpg",
+    "price": "120"
+  },
+  {
+    "id": "set_10",
+    "name": "Бельгийские вафли",
+    "description": "С пылу, с жару - вафли с ягодами и сметаной",
+    "img": "https://image.freepik.com/free-vector/breakfast-waffles-realistic-top-view-image_1284-14471.jpg",
+    "price": "180"
+  }
+]

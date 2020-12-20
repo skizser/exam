@@ -1,10 +1,17 @@
 let API_URL = 'http://exam-2020-1-api.std-900.ist.mospolytech.ru/api/';
 let API_GET_TABLE = 'data1';
-let ONPAGE_LIMIT = 10
+let ONPAGE_LIMIT = 1
 let PAGES_TO_IDS = new Map();
+let TOTAL_COST = 0;
 
-
+//
 window.onload = () => {
+    let handleAdditionalPositionsToogle = () => {
+        recountPrice();
+        updateModalAdditionalPositions()
+    };
+    document.getElementById('gift-up').addEventListener('click', handleAdditionalPositionsToogle);
+    document.getElementById('double-up').addEventListener('click', handleAdditionalPositionsToogle);
     getRestAll().then(rests => {
         let areas = new Set(['-']);
         let districts = new Set(['-']);
@@ -212,8 +219,8 @@ function redrawTable(rests) {
 
                 let actionButton = document.createElement('button');
                 actionButton.classList.add('btn');
-                actionButton.classList.add('btn-light');
-                //Обработать кнопку
+                actionButton.classList.add('btn-primary');
+                actionButton.addEventListener('click', () => btnRestSelect(rest))
                 actionButton.innerText = 'Выбрать';
                 let actionButtonColumn = document.createElement('td');
                 actionButtonColumn.appendChild(actionButton)
@@ -243,7 +250,7 @@ async function getFindRest() {
         (rest.district === districtFilterValue || districtFilterValue === '-') &&
         (rest.typeObject === restFilterValue || restFilterValue === '-'));
 
-     sortRests(filteredRests);
+    sortRests(filteredRests);
     updatePages(filteredRests);
     loadPage(1);
 }
@@ -259,3 +266,242 @@ function  sortRests(rests) {
         }
     })
 }
+
+function btnRestSelect(rest) {
+    let menu = document.querySelector('div.menu-list');
+    let currentAmounts = document.querySelectorAll('input[class*=set]')
+    let setToAmount = new Map()
+    for (let i = 0; i < currentAmounts.length; i++) {
+        setToAmount.set(`set_${i + 1}`, currentAmounts[i].value);
+    }
+    menu.innerHTML = '';
+    fetch("http://webdev-exam-2020-1-lg83f.std-1229.ist.mospolytech.ru/sets.json")
+        .then(response => response.json())
+        .then(sets => sets.forEach(set => {
+            let menuItem = createMenuItem(set.id, set.img, set.name, set.description, set.price, setToAmount.get(set.id))
+                menu.appendChild(menuItem);
+        }))
+
+    let restNameNode = document.createElement('span');
+    restNameNode.innerText = rest.name
+    let restNameContainer = document.querySelector('div.order-rest-name');
+    restNameContainer.innerHTML = '';
+    restNameContainer.appendChild(restNameNode);
+    
+    let restAreaNode = document.createElement('span');
+    restAreaNode.innerText = rest.admArea
+    let restAreaContainer = document.querySelector('div.order-rest-area');
+    restAreaContainer.innerHTML = '';
+    restAreaContainer.appendChild(restAreaNode);
+
+    let restDistrictNode = document.createElement('span');
+    restDistrictNode.innerText = rest.district
+    let restDistrictContainer = document.querySelector('div.order-rest-district');
+    restDistrictContainer.innerHTML = '';
+    restDistrictContainer.appendChild(restDistrictNode);
+
+    let restAddressNode = document.createElement('span');
+    restAddressNode.innerText = rest.address
+    let restAddressContainer = document.querySelector('div.order-rest-address');
+    restAddressContainer.innerHTML = '';
+    restAddressContainer.appendChild(restAddressNode);
+
+    let restRateNode = document.createElement('span');
+    restRateNode.innerText = rest.rate
+    let restRateContainer = document.querySelector('div.order-rest-rate');
+    restRateContainer.innerHTML = '';
+    restRateContainer.appendChild(restRateNode);
+}
+
+function createMenuItem(id, source, name, description, price, amount = 0) {
+    let menuItem = document.createElement('div');
+    menuItem.className = 'col-3 border border-warning m-2';
+
+    let imageContainer = document.createElement('div');
+    imageContainer.className = 'row';
+    let itemImage = document.createElement('img');
+    itemImage.className = 'img-fluid';
+    itemImage.src = source;
+    imageContainer.appendChild(itemImage);
+    menuItem.appendChild(imageContainer);
+
+    let nameContainer = document.createElement('div');
+    nameContainer.className = 'row justify-content-md-center mt-2';
+    let itemName = document.createElement('h4');
+    itemName.innerText = name;
+    nameContainer.appendChild(itemName);
+    menuItem.appendChild(nameContainer);
+
+    let descriptionContainer = document.createElement('div');
+    descriptionContainer.className = 'row justify-content-md-center';
+    let itemDescription = document.createElement('span');
+    itemDescription.innerText = description;
+    descriptionContainer.appendChild(itemDescription);
+    menuItem.appendChild(descriptionContainer);
+
+    let priceContainer = document.createElement('div');
+    priceContainer.className = `row justify-content-md-center mt-2 ${id}-price`;
+    let itemPrice = document.createElement('h4');
+    itemPrice.innerText = `${price}р.`;
+    priceContainer.appendChild(itemPrice);
+    menuItem.appendChild(priceContainer);
+
+    let controlPanelContainer = document.createElement('div');
+    controlPanelContainer.className = 'row justify-content-md-center mt-2 mb-2 amount-panel';
+    let itemAmount = document.createElement('input');
+    itemAmount.className = `form-control w-50 text-center ${id}-amount`;
+    itemAmount.type = 'number';
+    itemAmount.readOnly = true;
+    itemAmount.min = 0;
+    itemAmount.value = amount;
+
+    let changeAmount = (value) => {
+        let currentAmount = document.querySelector(`input.${id}-amount`);
+        currentAmount.value = +currentAmount.value + value
+        if (currentAmount.value == 0) {
+            document.querySelector(`button.${id}-decrease-button`).disabled = true;
+        } else {
+            document.querySelector(`button.${id}-decrease-button`).disabled = false;
+        }
+        recountPrice();
+        redrawModalPositions();
+    }
+
+    let decreaseButton = document.createElement('button');
+    decreaseButton.className = `btn btn-primary ml-1 mr-1 ${id}-decrease-button`;
+    decreaseButton.innerText = '-';
+    decreaseButton.disabled = (amount == 0);
+    decreaseButton.addEventListener('click', () => changeAmount(-1));
+
+    let increaseButton = document.createElement('button');
+    increaseButton.className = 'btn btn-primary ml-1 mr-1';
+    increaseButton.innerText = '+';
+    increaseButton.addEventListener('click', () => changeAmount(1));
+
+    
+    checkoutBtn = document.querySelector('button.place-an-order');
+    checkoutBtn.addEventListener('click', () => recountPrice());
+
+
+    controlPanelContainer.appendChild(decreaseButton);
+    controlPanelContainer.appendChild(itemAmount);
+    controlPanelContainer.appendChild(increaseButton);
+    menuItem.appendChild(controlPanelContainer);
+    return menuItem;
+}
+
+function recountPrice() {
+    let menuItems = document.querySelector('div.menu-list').children;
+    
+    TOTAL_COST = 0;
+    for (let menuItem of menuItems) {
+        let priceText = menuItem.children[3].lastElementChild.innerText;
+        let amountValue = menuItem.children[4].children[1].value;
+        if (+amountValue > 0) {
+            TOTAL_COST += parseInt(priceText) * amountValue
+        }
+    }
+    if (document.querySelector('input.double-up').checked) {
+        TOTAL_COST = Math.round(TOTAL_COST / 200) * 160;
+    }
+    
+    if (TOTAL_COST === 0) {
+        document.querySelector('div.total-cost').lastElementChild.innerText = `Сумма заказа не может быть равна ${TOTAL_COST} руб.
+        Что бы совершить заказ, добавьте товары в корзину.`;
+        document.getElementById('gift-up').disabled = true;
+        document.getElementById('double-up').disabled = true;
+        document.querySelectorAll('input[type="checkbox"]').checked = true;
+    } else {
+        document.getElementById('gift-up').disabled = false;
+        document.getElementById('double-up').disabled = false;
+        document.querySelector('button.place-an-order').setAttribute("data-target", "#orderModal");
+        document.querySelector('div.total-cost').lastElementChild.innerText = `Итого ${TOTAL_COST} руб.`;
+        document.querySelector('div.order-total').lastElementChild.innerText = `${TOTAL_COST} руб.`;
+    }
+}
+
+function redrawModalPositions() {
+    let orderContainer = document.querySelector('div.order-positions');
+    orderContainer.innerHTML = '';
+
+    let header = document.createElement('h2');
+    header.innerText = 'Позиции заказа';
+    orderContainer.appendChild(header);
+
+    let menuItems = document.querySelector('div.menu-list').children;
+
+    for (let menuItem of menuItems) {
+        let amountValue = menuItem.children[4].children[1].value;
+        if (amountValue == 0) {
+            continue;
+        }
+        let imgSource = menuItem.children[0].lastElementChild.src
+        let name = menuItem.children[1].lastElementChild.innerText
+        let priceText = menuItem.children[3].lastElementChild.innerText;
+
+        let itemRow = document.createElement('div');
+        itemRow.className = 'row border border-dark mt-2 align-items-center';
+
+        let imgColumn = document.createElement('div');
+        imgColumn.className = 'col-2';
+        let imgNode = document.createElement('img');
+        imgNode.src = imgSource
+        imgNode.className = 'img-thumbnail';
+        imgColumn.appendChild(imgNode);
+        itemRow.appendChild(imgColumn);
+
+        let nameColumn = document.createElement('div');
+        nameColumn.className = 'col-3';
+        let nameNode = document.createElement('span');
+        nameNode.innerText = name;
+        nameColumn.appendChild(nameNode);
+        itemRow.appendChild(nameColumn);
+
+        let sumDetailsColumn = document.createElement('div');
+        sumDetailsColumn.className = 'col-5 text-center';
+        let sumDetailsInfo = document.createElement('span');
+        sumDetailsInfo.innerText = `${amountValue}*${priceText}`;
+        sumDetailsColumn.appendChild(sumDetailsInfo);
+        itemRow.appendChild(sumDetailsColumn);
+
+        let itemSumColumn = document.createElement('div');
+        itemSumColumn.className = 'col-2'; 
+        let itemSumInfo = document.createElement('span');
+        itemSumInfo.innerText = `${amountValue * parseInt(priceText)}р.`;
+        itemSumColumn.appendChild(itemSumInfo);
+        itemRow.appendChild(itemSumColumn);
+
+        orderContainer.appendChild(itemRow);
+    }
+}
+
+
+function updateModalAdditionalPositions() {
+    let additionPositionsContainer = document.querySelector('div.order-additional-positions');
+    let giftChecked = document.getElementById('gift-up').checked;
+    let doubleUpChecked = document.getElementById('double-up').checked;
+
+    additionPositionsContainer.innerHTML = '';
+
+    if (giftChecked || doubleUpChecked) {
+        let header = document.createElement('h2');
+        header.innerText = 'Дополнительные опции';
+        additionPositionsContainer.appendChild(header);
+    }
+
+    if (giftChecked) {
+        let randomElement = getRandomElement(document.querySelector('div.menu-list').children);
+        let modalItem = document.querySelector('order-positions');
+        modalItem.appendChild(randomElement);
+
+    }
+
+    if (doubleUpChecked) {
+
+    }
+}
+
+function getRandomElement(arr) {
+    let randIndex = Math.floor(Math.random() * arr.length);
+    return arr[randIndex];
+  }

@@ -27,7 +27,7 @@
     </header>
     <main class="container" style="background-color: #ffdb8b;">
 
-        <!-- Затонировать картинки, текст сделать больше -->
+        <!-- 
         <div id="carouselIndicators" class="carousel slide text-dark" data-ride="carousel">
             <ol class="carousel-indicators">
                 <li data-target="#carouselIndicators" data-slide-to="0" class="active"></li>
@@ -37,21 +37,21 @@
             <div class="carousel-inner">
                 <div class="carousel-item active">
                     <img class="d-block w-100" src="https://images.unsplash.com/photo-1498837167922-ddd27525d352?ixlib=rb-1.2.1&ixid=MXwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHw%3D" alt="Первый слайд">
-                    <div class="carousel-caption d-none d-md-block">
+                    <div class="carousel-caption d-none d-md-block" style="background-color: rgba(0,0,0, .5);">
                         <h3>Вкусная еда</h3>
                         <p>...</p>
                     </div>
                 </div>
                 <div class="carousel-item">
                     <img class="d-block w-100" src="https://images.unsplash.com/photo-1504754524776-8f4f37790ca0?ixid=MXwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHw%3D" alt="Второй слайд">
-                    <div class="carousel-caption d-none d-md-block">
+                    <div class="carousel-caption d-none d-md-block"style="background-color: rgba(0,0,0, .5);">
                         <h3>Быстрая доставка</h3>
                         <p>...</p>
                     </div>
                 </div>
                 <div class="carousel-item">
                     <img class="d-block w-100" src="https://images.unsplash.com/photo-1504674900247-0877df9cc836?ixid=MXwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHw%3D" alt="Третий слайд">
-                    <div class="carousel-caption d-none d-md-block">
+                    <div class="carousel-caption d-none d-md-block" style="background-color: rgba(0,0,0, .5);">
                         <h3>Рядом с вашим домом</h3>
                         <p>...</p>
                     </div>
@@ -121,12 +121,13 @@
                 </div>
             </div>
         </div>
-        <!-- Отцентрировать, покрасить -->
         <hr color="#f7022a">
         <div class="row mt-5" id="rests">
-            <h2 class="text-center">Выбор предприятия общественного питания</h2>
+            <h2 class="container-fluid text-center">Выбор предприятия общественного питания</h2>
         </div>
-        <div class="row mt-5 justify-content-md-center border m-0 p-2 pb-3">
+        -->
+        <!--Menu list-->
+        <div class="row mt-5 justify-content-md-center border m-0 p-2 pb-3" >
             <div class="row w-100">
                 <div class="col-sm">
                     <label for="area-filter">Административный округ</label>
@@ -146,7 +147,7 @@
                     </select>
                 </div>
                 <div class="col-sm my-auto">
-                    <button type="button" class="btn btn-light w-100 mt-4" onclick="getFindRest()">Поиск</button>
+                    <button type="button" class="btn btn-prim w-100 mt-4" onclick="getFindRest()">Поиск</button>
                 </div>
             </div>
         </div>
@@ -179,15 +180,173 @@
             </ul>
         </nav>
         <hr>
-	<div class="row mt-5 justify-content-around text-center">
-		<h2>Меню</h2>
-	</div>
-	<div class="row mt-5 menu-box justify-content-around">
-		<h4>Для отображения меню, выберите заведение</h4>
-	</div>
-	<div class="row mt-5 justify-content-around text-center">
-		<h2>Дополнительные опции</h2>
-	</div>
+        <div class="row mt-5 justify-content-around text-center">
+            <h2>Меню</h2>
+        </div>
+        <div class="row mt-5 menu-list justify-content-around">
+            <h4>Для отображения меню, выберите заведение</h4>
+        </div>
+        <hr>
+        <!--Option-->
+        <div class="row mt-5 justify-content-around text-center">
+            <h2>Дополнительные опции</h2>
+        </div>
+        <div class="row mt-1 ml-3">
+            <div class="form-check">
+                <input type="checkbox" class="form-check-input gift-up" id="gift-up" disabled>
+                <label class="form-check-label" for="gift-up">Хочу подарок</label>
+            </div>
+        </div>
+        <div class="row ml-3">
+            <div class="form-check">
+                <input type="checkbox" class="form-check-input double-up" id="double-up" disabled>
+                <label class="form-check-label" for="double-up">В два раза больше</label>
+            </div>
+        </div>
+
+        <!--Modal fade-->
+        <div class="modal fade" id="orderModal" tabindex="-1" role="dialog" aria-labelledby="orderModalLabel" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h1 class="modal-title" id="orderModalLabel">Оформление заказа</h1>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body container-fluid order-content">
+                        <div class="container mt-4 order-positions">
+                        </div>
+                        <div class="container mt-4 order-additional-positions">
+                        </div>
+                        <div class="container mt-4">
+                            <div class="row">
+                                <div class="col">
+                                    <h2>Информация о предриятии</h2>
+                                </div>
+                            </div>
+                            <div class="row mt-2">
+                                <div class="col-6">
+                                    <span>Название</span>
+                                </div>
+                                <div class="col-6 order-rest-name">
+                                </div>
+                            </div>
+                            <div class="row mt-2">
+                                <div class="col-6">
+                                    <span>Административный округ</span>
+                                </div>
+                                <div class="col-6 order-rest-area">
+                                </div>
+                            </div>
+                            <div class="row mt-2">
+                                <div class="col-6">
+                                    <span>Район</span>
+                                </div>
+                                <div class="col-6 order-rest-district">
+                                </div>
+                            </div>
+                            <div class="row mt-2">
+                                <div class="col-6">
+                                    <span>Адрес</span>
+                                </div>
+                                <div class="col-6 order-rest-address">
+                                </div>
+                            </div>
+                            <div class="row mt-2">
+                                <div class="col-6">
+                                    <span>Рейтинг</span>
+                                </div>
+                                <div class="col-6 order-rest-rate">
+                                </div>
+                            </div>
+                        </div>
+                        <div class="container mt-2">
+                            <div class="row">
+                                <div class="col">
+                                    <h2>Доставка</h2>
+                                </div>
+                            </div>
+                            <div class="row mt-1">
+                                <div class="col-6">
+                                    <span>Город</span>
+                                </div>
+                                <div class="col-6">
+                                    <textarea class="form-control" rows="1"></textarea>
+                                </div>
+                            </div>
+                            <div class="row mt-1">
+                                <div class="col-6">
+                                    <span>Улица</span>
+                                </div>
+                                <div class="col-6">
+                                    <textarea class="form-control" rows="1"></textarea>
+                                </div>
+                            </div>
+                            <div class="row mt-1">
+                                <div class="col-6">
+                                    <span>Дом</span>
+                                </div>
+                                <div class="col-6">
+                                    <textarea class="form-control" rows="1"></textarea>
+                                </div>
+                            </div>
+                            <div class="row mt-1">
+                                <div class="col-6">
+                                    <span>Этаж</span>
+                                </div>
+                                <div class="col-6">
+                                    <textarea class="form-control" rows="1"></textarea>
+                                </div>
+                            </div>
+                            <div class="row mt-1">
+                                <div class="col-6">
+                                    <span>ФИО получателя</span>
+                                </div>
+                                <div class="col-6">
+                                    <textarea class="form-control" rows="1"></textarea>
+                                </div>
+                            </div>
+                            <div class="row mt-1">
+                                <div class="col-6">
+                                    <span>Номер телефона</span>
+                                </div>
+                                <div class="col-6">
+                                    <textarea class="form-control" rows="1"></textarea>
+                                </div>
+                            </div>
+                            <div class="row mt-3">
+                                <div class="col-6">
+                                    <h2>Итого:</h2>
+                                </div>
+                                <div class="col-6 order-total">
+                                    <h2></h2>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer justify-content-md-between">
+                        <button type="button" class="btn btn-light" data-dismiss="modal">Отмена</button>
+                        <button type="button" class="btn btn-primary" data-dismiss="modal" data-toggle="modal" data-target="#finishModel">
+                            Оформить заказ
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!--Amount and place an order-->
+        <div class="row mt-5 p-2 pl-4">
+            <div class="row border border-light justify-content-between w-100 p-3">
+                <div class="col-8 total-cost">
+                    <h4>Итого: 0 руб.</h4>
+                </div>
+                <div class="col-2">
+                    <button type="button" class="btn btn-primary place-an-order"
+                            data-toggle="modal" data-target="#errorModal">Оформить заказ
+                    </button>
+                </div>
+            </div>
+        </div>      
 
 
         
