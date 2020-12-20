@@ -3,6 +3,7 @@ let API_GET_TABLE = 'data1';
 let ONPAGE_LIMIT = 1
 let PAGES_TO_IDS = new Map();
 let TOTAL_COST = 0;
+let GIFT = true;
 
 //
 window.onload = () => {
@@ -402,7 +403,7 @@ function recountPrice() {
         }
     }
     if (document.querySelector('input.double-up').checked) {
-        TOTAL_COST = Math.round(TOTAL_COST / 200) * 160;
+        TOTAL_COST = Math.round((TOTAL_COST *2) / 200) * 160;
     }
     
     if (TOTAL_COST === 0) {
@@ -423,10 +424,6 @@ function recountPrice() {
 function redrawModalPositions() {
     let orderContainer = document.querySelector('div.order-positions');
     orderContainer.innerHTML = '';
-
-    let header = document.createElement('h2');
-    header.innerText = 'Позиции заказа';
-    orderContainer.appendChild(header);
 
     let menuItems = document.querySelector('div.menu-list').children;
 
@@ -452,6 +449,7 @@ function redrawModalPositions() {
 
         let nameColumn = document.createElement('div');
         nameColumn.className = 'col-3';
+
         let nameNode = document.createElement('span');
         nameNode.innerText = name;
         nameColumn.appendChild(nameNode);
@@ -459,8 +457,14 @@ function redrawModalPositions() {
 
         let sumDetailsColumn = document.createElement('div');
         sumDetailsColumn.className = 'col-5 text-center';
+
+        let sumDetailsQuantity = document.createElement('span');
+        sumDetailsQuantity.innerText = `${amountValue}`;
+        sumDetailsColumn.appendChild(sumDetailsQuantity);
+        itemRow.appendChild(sumDetailsColumn);
+
         let sumDetailsInfo = document.createElement('span');
-        sumDetailsInfo.innerText = `${amountValue}*${priceText}`;
+        sumDetailsInfo.innerText = `*${priceText}`;
         sumDetailsColumn.appendChild(sumDetailsInfo);
         itemRow.appendChild(sumDetailsColumn);
 
@@ -485,23 +489,34 @@ function updateModalAdditionalPositions() {
 
     if (giftChecked || doubleUpChecked) {
         let header = document.createElement('h2');
-        header.innerText = 'Дополнительные опции';
+        header.innerText = 'Дополнительные опции:';
         additionPositionsContainer.appendChild(header);
     }
 
     if (giftChecked) {
         let randomElement = getRandomElement(document.querySelector('div.menu-list').children);
-        let modalItem = document.querySelector('order-positions');
-        modalItem.appendChild(randomElement);
+        let modalItems = document.querySelector('div.order-positions').children;
+        for (modalItem of modalItems) {
+            if (modalItem.children[0].children[0].src == randomElement.children[0].children[0].src) {
+                let quantity = modalItem.children[2].children[0];
+                quantity.innerText = `${parseInt(quantity.innerText) + 1}`;
+            }
+        }
 
     }
 
     if (doubleUpChecked) {
-
+        let modalItems = document.querySelector('div.order-positions').children;
+        for (modalItem of modalItems) {
+            let quantity = modalItem.children[2].children[0];
+            let itemCost = modalItem.children[3].children[0]
+            quantity.innerText = `${parseInt(quantity.innerText) * 2}`;
+            itemCost.innerText = `${parseInt(itemCost.innerText) * 2}`;
+        }
     }
 }
 
 function getRandomElement(arr) {
     let randIndex = Math.floor(Math.random() * arr.length);
     return arr[randIndex];
-  }
+}
