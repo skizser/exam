@@ -432,50 +432,8 @@ function redrawModalPositions() {
         if (amountValue == 0) {
             continue;
         }
-        let imgSource = menuItem.children[0].lastElementChild.src
-        let name = menuItem.children[1].lastElementChild.innerText
-        let priceText = menuItem.children[3].lastElementChild.innerText;
-
-        let itemRow = document.createElement('div');
-        itemRow.className = 'row border border-dark mt-2 align-items-center';
-
-        let imgColumn = document.createElement('div');
-        imgColumn.className = 'col-2';
-        let imgNode = document.createElement('img');
-        imgNode.src = imgSource
-        imgNode.className = 'img-thumbnail';
-        imgColumn.appendChild(imgNode);
-        itemRow.appendChild(imgColumn);
-
-        let nameColumn = document.createElement('div');
-        nameColumn.className = 'col-3';
-
-        let nameNode = document.createElement('span');
-        nameNode.innerText = name;
-        nameColumn.appendChild(nameNode);
-        itemRow.appendChild(nameColumn);
-
-        let sumDetailsColumn = document.createElement('div');
-        sumDetailsColumn.className = 'col-5 text-center';
-
-        let sumDetailsQuantity = document.createElement('span');
-        sumDetailsQuantity.innerText = `${amountValue}`;
-        sumDetailsColumn.appendChild(sumDetailsQuantity);
-        itemRow.appendChild(sumDetailsColumn);
-
-        let sumDetailsInfo = document.createElement('span');
-        sumDetailsInfo.innerText = `*${priceText}`;
-        sumDetailsColumn.appendChild(sumDetailsInfo);
-        itemRow.appendChild(sumDetailsColumn);
-
-        let itemSumColumn = document.createElement('div');
-        itemSumColumn.className = 'col-2'; 
-        let itemSumInfo = document.createElement('span');
-        itemSumInfo.innerText = `${amountValue * parseInt(priceText)}р.`;
-        itemSumColumn.appendChild(itemSumInfo);
-        itemRow.appendChild(itemSumColumn);
-
-        orderContainer.appendChild(itemRow);
+        
+        orderContainer.appendChild(redravModalPositionBox(menuItem, amountValue));
     }
 }
 
@@ -495,11 +453,19 @@ function updateModalAdditionalPositions() {
 
     if (giftChecked) {
         let randomElement = getRandomElement(document.querySelector('div.menu-list').children);
-        let modalItems = document.querySelector('div.order-positions').children;
+        let randomElementImg = randomElement.children[0].children[0].src
+        let orderContainer = document.querySelector('div.order-positions');
+        let modalItems = orderContainer.children;
+        let counter = 0;
         for (modalItem of modalItems) {
-            if (modalItem.children[0].children[0].src == randomElement.children[0].children[0].src) {
-                let quantity = modalItem.children[2].children[0];
-                quantity.innerText = `${parseInt(quantity.innerText) + 1}`;
+            let quantity = modalItem.children[2].children[0].innerText;
+            modalItemImg = modalItem.children[0].children[0].src;
+            counter += 1;
+            if (modalItem.children[0].children[0].src == randomElementImg && quantity > 0) {
+                quantity = `${parseInt(quantity) + 1}`;
+                break;
+            }else if (counter == modalItems.length) {
+                orderContainer.appendChild(redravModalPositionBox(randomElement));
             }
         }
 
@@ -509,11 +475,58 @@ function updateModalAdditionalPositions() {
         let modalItems = document.querySelector('div.order-positions').children;
         for (modalItem of modalItems) {
             let quantity = modalItem.children[2].children[0];
-            let itemCost = modalItem.children[3].children[0]
+            let itemCost = modalItem.children[3].children[0];
             quantity.innerText = `${parseInt(quantity.innerText) * 2}`;
             itemCost.innerText = `${parseInt(itemCost.innerText) * 2}`;
         }
     }
+}
+
+function redravModalPositionBox(menuItem, amountValue = 1) {
+    let imgSource = menuItem.children[0].lastElementChild.src;
+    let name = menuItem.children[1].lastElementChild.innerText;
+    let priceText = menuItem.children[3].lastElementChild.innerText;
+
+    let itemRow = document.createElement('div');
+    itemRow.className = 'row border border-dark mt-2 align-items-center';
+
+    let imgColumn = document.createElement('div');
+    imgColumn.className = 'col-2';
+    let imgNode = document.createElement('img');
+    imgNode.src = imgSource
+    imgNode.className = 'img-thumbnail';
+    imgColumn.appendChild(imgNode);
+    itemRow.appendChild(imgColumn);
+
+    let nameColumn = document.createElement('div');
+    nameColumn.className = 'col-3';
+
+    let nameNode = document.createElement('span');
+    nameNode.innerText = name;
+    nameColumn.appendChild(nameNode);
+    itemRow.appendChild(nameColumn);
+
+    let sumDetailsColumn = document.createElement('div');
+    sumDetailsColumn.className = 'col-5 text-center';
+
+    let sumDetailsQuantity = document.createElement('span');
+    sumDetailsQuantity.innerText = `${amountValue}`;
+    sumDetailsColumn.appendChild(sumDetailsQuantity);
+    itemRow.appendChild(sumDetailsColumn);
+
+    let sumDetailsInfo = document.createElement('span');
+    sumDetailsInfo.innerText = `*${priceText}`;
+    sumDetailsColumn.appendChild(sumDetailsInfo);
+    itemRow.appendChild(sumDetailsColumn);
+
+    let itemSumColumn = document.createElement('div');
+    itemSumColumn.className = 'col-2'; 
+    let itemSumInfo = document.createElement('span');
+    itemSumInfo.innerText = `${amountValue * parseInt(priceText)}р.`;
+    itemSumColumn.appendChild(itemSumInfo);
+    itemRow.appendChild(itemSumColumn);
+
+    return itemRow
 }
 
 function getRandomElement(arr) {
