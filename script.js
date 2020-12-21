@@ -1,9 +1,10 @@
 let API_URL = 'http://exam-2020-1-api.std-900.ist.mospolytech.ru/api/';
 let API_GET_TABLE = 'data1';
-let ONPAGE_LIMIT = 1
+let ONPAGE_LIMIT = 10;
 let PAGES_TO_IDS = new Map();
 let TOTAL_COST = 0;
-let GIFT = true;
+let GIFT = false;
+let DOUBLE_TRIGGER = false;
 
 //
 window.onload = () => {
@@ -13,6 +14,7 @@ window.onload = () => {
     };
     document.getElementById('gift-up').addEventListener('click', handleAdditionalPositionsToogle);
     document.getElementById('double-up').addEventListener('click', handleAdditionalPositionsToogle);
+
     getRestAll().then(rests => {
         let areas = new Set(['-']);
         let districts = new Set(['-']);
@@ -403,7 +405,7 @@ function recountPrice() {
         }
     }
     if (document.querySelector('input.double-up').checked) {
-        TOTAL_COST = Math.round((TOTAL_COST *2) / 200) * 160;
+        TOTAL_COST = Math.round(TOTAL_COST * 1.6);
     }
     
     if (TOTAL_COST === 0) {
@@ -433,7 +435,7 @@ function redrawModalPositions() {
             continue;
         }
         
-        orderContainer.appendChild(redravModalPositionBox(menuItem, amountValue));
+        orderContainer.appendChild(redrawModalPositionBox(menuItem, amountValue));
     }
 }
 
@@ -442,18 +444,16 @@ function updateModalAdditionalPositions() {
     let additionPositionsContainer = document.querySelector('div.order-additional-positions');
     let giftChecked = document.getElementById('gift-up').checked;
     let doubleUpChecked = document.getElementById('double-up').checked;
-
     additionPositionsContainer.innerHTML = '';
-
     if (giftChecked || doubleUpChecked) {
         let header = document.createElement('h2');
         header.innerText = 'Дополнительные опции:';
         additionPositionsContainer.appendChild(header);
     }
-
     if (giftChecked) {
         let randomElement = getRandomElement(document.querySelector('div.menu-list').children);
-        let randomElementImg = randomElement.children[0].children[0].src
+        let randomElementImg = randomElement.children[0].lastElementChild.src
+        let randomElementName = randomElement.children[1].lastElementChild.innerText
         let orderContainer = document.querySelector('div.order-positions');
         let modalItems = orderContainer.children;
         let counter = 0;
@@ -465,24 +465,24 @@ function updateModalAdditionalPositions() {
                 quantity = `${parseInt(quantity) + 1}`;
                 break;
             }else if (counter == modalItems.length) {
-                orderContainer.appendChild(redravModalPositionBox(randomElement));
+                orderContainer.appendChild(redrawModalPositionBox(randomElement));
             }
         }
-
+        additionPositionsContainer.appendChild(addModalAdditionRows('Выбран подарок', randomElementName));
     }
-
     if (doubleUpChecked) {
         let modalItems = document.querySelector('div.order-positions').children;
         for (modalItem of modalItems) {
             let quantity = modalItem.children[2].children[0];
             let itemCost = modalItem.children[3].children[0];
             quantity.innerText = `${parseInt(quantity.innerText) * 2}`;
-            itemCost.innerText = `${parseInt(itemCost.innerText) * 2}`;
+            itemCost.innerText = `${Math.round(parseInt(itemCost.innerText) * 2)}р.`;
         }
+        additionPositionsContainer.appendChild(addModalAdditionRows('Заказ удвоен, скидка:', `${Math.round(parseInt(TOTAL_COST) / 160 * 40)}р.`));
     }
 }
 
-function redravModalPositionBox(menuItem, amountValue = 1) {
+function redrawModalPositionBox(menuItem, amountValue = 1) {
     let imgSource = menuItem.children[0].lastElementChild.src;
     let name = menuItem.children[1].lastElementChild.innerText;
     let priceText = menuItem.children[3].lastElementChild.innerText;
@@ -532,4 +532,22 @@ function redravModalPositionBox(menuItem, amountValue = 1) {
 function getRandomElement(arr) {
     let randIndex = Math.floor(Math.random() * arr.length);
     return arr[randIndex];
+}
+
+function addModalAdditionRows(text, amountText) {
+    let addRow = document.createElement('div');
+    addRow.className = 'row';
+    let addTextNode = document.createElement('div');
+    addTextNode.className = 'col-6';
+    let addText = document.createElement('span');
+    addText.innerText = `${text}`;
+    addTextNode.appendChild(addText);
+    addRow.appendChild(addTextNode);
+    let addAmountNode = document.createElement('div');
+    addAmountNode.className = 'col-6';
+    let addAmount = document.createElement('span');
+    addAmount.innerText = `${amountText}`;
+    addAmountNode.appendChild(addAmount);
+    addRow.appendChild(addAmountNode);
+    return addRow;
 }
