@@ -3,18 +3,11 @@ let API_GET_TABLE = 'data1';
 let ONPAGE_LIMIT = 10;
 let PAGES_TO_IDS = new Map();
 let TOTAL_COST = 0;
-let GIFT = false;
+let GIFT_TRIGGER = false;
 let DOUBLE_TRIGGER = false;
 
 //
 window.onload = () => {
-    let handleAdditionalPositionsToogle = () => {
-        recountPrice();
-        updateModalAdditionalPositions()
-    };
-    document.getElementById('gift-up').addEventListener('click', handleAdditionalPositionsToogle);
-    document.getElementById('double-up').addEventListener('click', handleAdditionalPositionsToogle);
-
     getRestAll().then(rests => {
         let areas = new Set(['-']);
         let districts = new Set(['-']);
@@ -47,6 +40,7 @@ window.onload = () => {
         updatePages(rests);
         loadPage(1);
     })
+    document.getElementById('double-up').addEventListener('click', () => recountPrice());
 }
 
 
@@ -366,6 +360,8 @@ function createMenuItem(id, source, name, description, price, amount = 0) {
         } else {
             document.querySelector(`button.${id}-decrease-button`).disabled = false;
         }
+        GIFT_TRIGGER = false;
+        DOUBLE_TRIGGER = false;
         recountPrice();
         redrawModalPositions();
     }
@@ -381,9 +377,13 @@ function createMenuItem(id, source, name, description, price, amount = 0) {
     increaseButton.innerText = '+';
     increaseButton.addEventListener('click', () => changeAmount(1));
 
+    let placeAnOrder = () => {
+        recountPrice();
+        updateModalAdditionalPositions();
+    }
     
     checkoutBtn = document.querySelector('button.place-an-order');
-    checkoutBtn.addEventListener('click', () => recountPrice());
+    checkoutBtn.addEventListener('click', placeAnOrder);
 
 
     controlPanelContainer.appendChild(decreaseButton);
@@ -453,33 +453,41 @@ function updateModalAdditionalPositions() {
     if (giftChecked) {
         let randomElement = getRandomElement(document.querySelector('div.menu-list').children);
         let randomElementImg = randomElement.children[0].lastElementChild.src
-        let randomElementName = randomElement.children[1].lastElementChild.innerText
+        let randomElementName = '';
         let orderContainer = document.querySelector('div.order-positions');
         let modalItems = orderContainer.children;
         let counter = 0;
-        for (modalItem of modalItems) {
-            let quantity = modalItem.children[2].children[0].innerText;
-            modalItemImg = modalItem.children[0].children[0].src;
-            counter += 1;
-            if (modalItem.children[0].children[0].src == randomElementImg && quantity > 0) {
-                quantity = `${parseInt(quantity) + 1}`;
-                break;
-            }else if (counter == modalItems.length) {
-                orderContainer.appendChild(redrawModalPositionBox(randomElement));
+        if(giftChecked && GIFT_TRIGGER == false) {
+            randomElementName = randomElement.children[1].lastElementChild.innerText;
+            for (modalItem of modalItems) {
+                let quantity = modalItem.children[2].children[0].innerText;
+                modalItemImg = modalItem.children[0].children[0].src;
+                counter += 1;
+                if (modalItemImg == randomElementImg) {
+                    quantity = `${parseInt(quantity) + 1}`;
+                    break;
+                }else if (counter == modalItems.length) {
+                    orderContainer.appendChild(redrawModalPositionBox(randomElement));
+                }
             }
+            GIFT_TRIGGER = true;
+            console.log(GIFT_TRIGGER);
         }
         additionPositionsContainer.appendChild(addModalAdditionRows('Выбран подарок', randomElementName));
-    }
+    }else if (!giftChecked && GIFT_TRIGGER == true) {GIFT_TRIGGER = false;}
     if (doubleUpChecked) {
         let modalItems = document.querySelector('div.order-positions').children;
-        for (modalItem of modalItems) {
-            let quantity = modalItem.children[2].children[0];
-            let itemCost = modalItem.children[3].children[0];
-            quantity.innerText = `${parseInt(quantity.innerText) * 2}`;
-            itemCost.innerText = `${Math.round(parseInt(itemCost.innerText) * 2)}р.`;
+        if(doubleUpChecked && DOUBLE_TRIGGER == false) {
+            for (modalItem of modalItems) {
+                let quantity = modalItem.children[2].children[0];
+                let itemCost = modalItem.children[3].children[0];
+                quantity.innerText = `${parseInt(quantity.innerText) * 2}`;
+                itemCost.innerText = `${Math.round(parseInt(itemCost.innerText) * 2)}р.`;
+            }
+            DOUBLE_TRIGGER = true; 
         }
         additionPositionsContainer.appendChild(addModalAdditionRows('Заказ удвоен, скидка:', `${Math.round(parseInt(TOTAL_COST) / 160 * 40)}р.`));
-    }
+    }else if (!doubleUpChecked && DOUBLE_TRIGGER == true) {DOUBLE_TRIGGER = false};
 }
 
 function redrawModalPositionBox(menuItem, amountValue = 1) {
