@@ -5,8 +5,10 @@ let PAGES_TO_IDS = new Map();
 let TOTAL_COST = 0;
 let GIFT_TRIGGER = false;
 let DOUBLE_TRIGGER = false;
+let GIFT_NAME = '';
 
-//
+
+
 window.onload = () => {
     getRestAll().then(rests => {
         let areas = new Set(['-']);
@@ -451,29 +453,33 @@ function updateModalAdditionalPositions() {
         additionPositionsContainer.appendChild(header);
     }
     if (giftChecked) {
-        let randomElement = getRandomElement(document.querySelector('div.menu-list').children);
-        let randomElementImg = randomElement.children[0].lastElementChild.src
-        let randomElementName = '';
-        let orderContainer = document.querySelector('div.order-positions');
-        let modalItems = orderContainer.children;
-        let counter = 0;
-        if(giftChecked && GIFT_TRIGGER == false) {
-            randomElementName = randomElement.children[1].lastElementChild.innerText;
+        if(giftChecked && GIFT_TRIGGER == false) {            
+            let orderContainer = document.querySelector('div.order-positions');
+            let modalItems = orderContainer.children;
+            let counter = 0;
+            let randomElement = getRandomElement(document.querySelector('div.menu-list').children);
+            let randomElementImg = randomElement.children[0].lastElementChild.src
+            let randomElementName = randomElement.children[1].lastElementChild.innerText;
             for (modalItem of modalItems) {
-                let quantity = modalItem.children[2].children[0].innerText;
                 modalItemImg = modalItem.children[0].children[0].src;
                 counter += 1;
+                GIFT_NAME = randomElementName;
                 if (modalItemImg == randomElementImg) {
-                    quantity = `${parseInt(quantity) + 1}`;
+                    if (counter != modalItems.length) {
+                        let quantity = modalItem.children[2].children[0];
+                        quantity.innerText = `${parseInt(quantity.innerText) + 1}`;
+                    }else {
+                        let quantity = modalItem.children[2].children[0];
+                        quantity.innerText = `${parseInt(quantity.innerText)}`;
+                    }
                     break;
                 }else if (counter == modalItems.length) {
                     orderContainer.appendChild(redrawModalPositionBox(randomElement));
                 }
             }
             GIFT_TRIGGER = true;
-            console.log(GIFT_TRIGGER);
         }
-        additionPositionsContainer.appendChild(addModalAdditionRows('Выбран подарок', randomElementName));
+        additionPositionsContainer.appendChild(addModalAdditionRows('Выбран подарок', GIFT_NAME));
     }else if (!giftChecked && GIFT_TRIGGER == true) {GIFT_TRIGGER = false;}
     if (doubleUpChecked) {
         let modalItems = document.querySelector('div.order-positions').children;
